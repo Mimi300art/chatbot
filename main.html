@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wootlab ChatBot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playwrite+HU:wght@100..400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <button class="chatbot-toggler">
+        <i class="fa fa-comments comment icon" aria-hidden="true"></i>
+    </button>
+    <div class="chatty">
+        <div class="chatbot">
+            <div class="header">
+                <h2>Wootlab Chatbot</h2>
+            </div>
+            <ul class="chat" id="chatMessages">
+                <li class="chat-incoming">
+                    <span class="chat-avatar"></span>
+                    <p>Hello <br> how can I help you?</p>
+                </li>
+            </ul>
+            <div class="chat-input">
+                <textarea id="userInput" placeholder="Enter your message..."></textarea>
+                <button id="sendBtn" class="sendBtn"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatbotToggler = document.querySelector('.chatbot-toggler');
+        const chatbot = document.querySelector('.chatbot');
+
+        chatbotToggler.addEventListener('click', () => {
+            if (chatbot.style.display === 'none' || chatbot.style.display === '') {
+                chatbot.style.display = 'block';
+            } else {
+                chatbot.style.display = 'none';
+            }
+        });
+
+        const sendBtn = document.getElementById('sendBtn');
+        const userInput = document.getElementById('userInput');
+        const messages = document.querySelector('.chat');
+
+        function displayMessage(sender, message) {
+            const messageElement = document.createElement('li');
+            messageElement.classList.add(sender === 'You' ? 'chat-outgoing' : 'chat-incoming');
+            messageElement.innerHTML = `<p>${message}</p>`;
+            messages.appendChild(messageElement);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        async function sendMessageToAPI(userMessage) {
+            displayMessage('You', userMessage);
+
+            // Placeholder API key - replace with your actual key
+            const apiKey = "YOUR_API_KEY";
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+
+            const data = {
+                contents: [
+                    {
+                        role: "user",
+                        parts: [{ text: userMessage }]
+                    }
+                ],
+                systemInstruction: {
+                    role: "user",
+                    parts: [
+                        {
+                            text: `You are Mimi, a virtual assistant for Wootlab Innovations...`
+                        }
+                    ]
+                },
+                generationConfig: {
+                    temperature: 1,
+                    topK: 64,
+                    topP: 0.95,
+                    maxOutputTokens: 8192,
+                    responseMimeType: "text/plain"
+                }
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                const botMessage = result.candidates[0].content.parts[0].text || "Sorry, I didn't understand that.";
+                displayMessage('ChatBot', botMessage);
+            } catch (error) {
+                displayMessage('ChatBot', "An error occurred: " + error.message);
+            }
+        }
+
+        sendBtn.addEventListener('click', () => {
+            const userMessage = userInput.value.trim();
+            if (userMessage) {
+                sendMessageToAPI(userMessage);
+                userInput.value = '';
+            }
+        });
+    </script>
+</body>
+</html>

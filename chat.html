@@ -1,0 +1,298 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wootlab ChatBot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playwrite+HU:wght@100..400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <button class="chatbot-toggler">
+   <i class="fa fa-comments comment icon" aria-hidden="true"></i>
+    </button>
+    <div  class="chatty">
+
+    <div class="chatbot">
+
+    <div class="header">
+        <h2 >Wootlab Chatbot</h2>
+    </div>
+
+        <ul class="chat">
+            <li class="chat-incoming">
+                <span class="chat-avatar"></span>
+                <p>Hello <br> how can I help you?</p>
+            </li>
+        </ul>
+
+        <div class="chat-input">
+            <textarea id="userInput  placeholder="Enter your message...></textarea>
+             <button id="sendBtn" class="sendBtn"><i class="fas fa-paper-plane"></i></button> 
+             <button id="sendBtn" class="sendBtn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+       
+        
+    </div>
+    </div>
+
+
+
+    <script>
+
+const chatbotToggler = document.querySelector('.chatbot-toggler');
+    const chatbot = document.querySelector('.chatbot');
+
+    chatbotToggler.addEventListener('click', () => {
+    if (chatbot.style.display === 'none' || chatbot.style.display === '') {
+        chatbot.style.display = 'block'; 
+    } else {
+        chatbot.style.display = 'none';  
+    }
+});
+
+        const sendBtn = document.getElementById('sendBtn');
+        const userInput = document.getElementById('userInput');
+        const messages = document.querySelector('.chat');
+
+        function displayMessage(sender, message) {
+            const messageElement = document.createElement('li');
+            messageElement.classList.add(sender === 'You' ? 'chat-outgoing' : 'chat-incoming');
+            messageElement.innerHTML = `<p>${message}</p>`;
+            messages.appendChild(messageElement);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        async function sendMessageToAPI(userMessage) {
+            displayMessage('You', userMessage);
+
+            // Placeholder API key - make sure to replace with your actual key
+            const apiKey = "AIzaSyAUowZW7prd2bf17kN8K61AYw4Oo3Qyt0Y";
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+
+            const data = {
+                contents: [
+                    {
+                        role: "user",
+                        parts: [{ text: userMessage }]
+                    }
+                ],
+
+
+
+                systemInstruction: {
+                    role: "user",
+                    parts: [
+                        {
+                            text: `You are Mimi, a virtual assistant for Wootlab Innovations. Your primary role is to provide accurate and helpful answers to all questions about Wootlab Innovations. Wootlab Innovations is a tech company located in Maitama, Abuja, specializing in technology solutions, talent outsourcing, and equipping Nigerian youths with digital skills. The office space for Wootlab Innovations has a beautiful scenery, painted in white, and is known for its innovative environment.
+
+When interacting with users:
+
+If you can provide a direct answer, do so clearly and concisely.
+If a user asks about information not available, respond with: 'I'm sorry, I couldn't find the details you're looking for. Please visit Wootlab Innovations' website at https://wootlab.ng/ for more information or contact our support team.'
+If a request cannot be processed, respond with: 'I apologize, but I am unable to process your request at the moment. Please try again later or reach out to Wootlab Innovations directly for assistance.'
+Ensure that the chat history between you and the user is kept throughout the session.`
+                        }
+                    ]
+                },
+                generationConfig: {
+                    temperature: 1,
+                    topK: 64,
+                    topP: 0.95,
+                    maxOutputTokens: 8192,
+                    responseMimeType: "text/plain"
+                }
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                const botMessage = result.candidates[0].content.parts[0].text || "Sorry, I didn't understand that.";
+                displayMessage('ChatBot', botMessage);
+            } catch (error) {
+                displayMessage('ChatBot', "An error occurred: " + error.message);
+            }
+        }
+
+        sendBtn.addEventListener('click', () => {
+            const userMessage = userInput.value.trim();
+            if (userMessage) {
+                sendMessageToAPI(userMessage);
+                userInput.value = '';
+            }
+        });
+        document.getElementById("sendBtn").addEventListener("click", function() {
+     const userInput = document.getElementById("userInput").value;
+     if (userInput.trim() !== "") {
+         console.log("User input:", userInput);
+         // Here you can handle the input as needed, e.g., sending it to a chat function
+     } else {
+         console.log("Textarea is empty");
+     }
+ });
+
+
+       
+function addMessage(message) {
+    const chatMessages = document.getElementById('chatMessages');
+    const newMessage = document.createElement('div');
+    newMessage.textContent = message;
+    chatMessages.appendChild(newMessage);
+
+    // Auto-scroll to the bottom
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+
+
+//         function displayMessage(sender, message) {
+//     const messageElement = document.createElement('div');
+//     messageElement.textContent = `${sender}: ${message}`;
+//     messages.appendChild(messageElement);
+//     messages.scrollTop = messages.scrollHeight;  // Auto-scroll to the bottom
+// }
+
+    </script>
+</body>
+
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wootlab ChatBot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playwrite+HU:wght@100..400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <button class="chatbot-toggler">
+        <i class="fa fa-comments comment icon" aria-hidden="true"></i>
+    </button>
+    <div class="chatty">
+        <div class="chatbot">
+            <div class="header">
+                <h2>Wootlab Chatbot</h2>
+            </div>
+            <ul class="chat">
+                <li class="chat-incoming">
+                    <span class="chat-avatar"></span>
+                    <p>Hello <br> how can I help you?</p>
+                </li>
+            </ul>
+            <div class="chat-input">
+                <textarea id="userInput" placeholder="Enter your message..."></textarea>
+                <button id="sendBtn" class="sendBtn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatbotToggler = document.querySelector('.chatbot-toggler');
+        const chatbot = document.querySelector('.chatbot');
+
+        chatbotToggler.addEventListener('click', () => {
+            chatbot.style.display = (chatbot.style.display === 'none' || chatbot.style.display === '') ? 'block' : 'none';
+        });
+
+        const sendBtn = document.getElementById('sendBtn');
+        const userInput = document.getElementById('userInput');
+        const messages = document.querySelector('.chat');
+
+        function displayMessage(sender, message) {
+            const messageElement = document.createElement('li');
+            messageElement.classList.add(sender === 'You' ? 'chat-outgoing' : 'chat-incoming');
+            messageElement.innerHTML = `<p>${message}</p>`;
+            messages.appendChild(messageElement);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        async function sendMessageToAPI(userMessage) {
+            displayMessage('You', userMessage);
+
+            // Placeholder API key - make sure to replace with your actual key
+            const apiKey = "AIzaSyAUowZW7prd2bf17kN8K61AYw4Oo3Qyt0Y";
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+
+            const data = {
+                contents: [
+                    {
+                        role: "user",
+                        parts: [{ text: userMessage }]
+                    }
+                ],
+                systemInstruction: {
+                    role: "user",
+                    parts: [
+                        {
+                            text: `You are Mimi, a virtual assistant for Wootlab Innovations. Your primary role is to provide accurate and helpful answers to all questions about Wootlab Innovations. Wootlab Innovations is a tech company located in Maitama, Abuja, specializing in technology solutions, talent outsourcing, and equipping Nigerian youths with digital skills. The office space for Wootlab Innovations has a beautiful scenery, painted in white, and is known for its innovative environment.
+
+When interacting with users:
+
+If you can provide a direct answer, do so clearly and concisely.
+If a user asks about information not available, respond with: 'I'm sorry, I couldn't find the details you're looking for. Please visit Wootlab Innovations' website at https://wootlab.ng/ for more information or contact our support team.'
+If a request cannot be processed, respond with: 'I apologize, but I am unable to process your request at the moment. Please try again later or reach out to Wootlab Innovations directly for assistance.'
+Ensure that the chat history between you and the user is kept throughout the session.`
+                        }
+                    ]
+                },
+                generationConfig: {
+                    temperature: 1,
+                    topK: 64,
+                    topP: 0.95,
+                    maxOutputTokens: 8192,
+                    responseMimeType: "text/plain"
+                }
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                const botMessage = result.candidates[0].content.parts[0].text || "Sorry, I didn't understand that.";
+                displayMessage('ChatBot', botMessage);
+            } catch (error) {
+                displayMessage('ChatBot', "An error occurred: " + error.message);
+            }
+        }
+
+        sendBtn.addEventListener('click', () => {
+            const userMessage = userInput.value.trim();
+            if (userMessage) {
+                sendMessageToAPI(userMessage);
+                userInput.value = '';
+            }
+        });
+    </script>
+</body>
+</html>
